@@ -1,0 +1,93 @@
+[gd_scene load_steps=12 format=3 uid="uid://jdnrqh3qdvd8"]
+
+[ext_resource type="Texture2D" uid="uid://cmr8bcq86xkkb" path="res://playerGrey_up1.png" id="1_hqtel"]
+[ext_resource type="Script" uid="uid://dp8uw72h3o0vi" path="res://player.gd" id="1_sweqy"]
+[ext_resource type="Texture2D" uid="uid://vj22dj2o0ocw" path="res://art/exohelian1.png" id="2_1jxqw"]
+[ext_resource type="Texture2D" uid="uid://k4gukpoqmwsb" path="res://playerGrey_up2.png" id="2_sweqy"]
+[ext_resource type="Texture2D" uid="uid://c184osph1c74p" path="res://playerGrey_walk1.png" id="3_2hs0m"]
+[ext_resource type="Texture2D" uid="uid://c1xshh0t6bsb" path="res://art/exohelian2.png" id="3_dw050"]
+[ext_resource type="Texture2D" uid="uid://cwbcqqt5h5aq3" path="res://playerGrey_walk2.png" id="4_1jxqw"]
+[ext_resource type="Texture2D" uid="uid://dn0oc15y8ov0i" path="res://art/Blast.png" id="8_dw050"]
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_b26j0"]
+particle_flag_disable_z = true
+direction = Vector3(1, 1, 0)
+spread = 180.0
+initial_velocity_min = 147.71
+initial_velocity_max = 675.8
+angular_velocity_min = -63.8
+angular_velocity_max = 63.6
+gravity = Vector3(0, 0, 0)
+scale_min = 0.2
+scale_max = 0.4
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_dw050"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("2_1jxqw")
+}, {
+"duration": 1.0,
+"texture": ExtResource("3_dw050")
+}],
+"loop": true,
+"name": &"fly",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("1_hqtel")
+}, {
+"duration": 1.0,
+"texture": ExtResource("2_sweqy")
+}],
+"loop": true,
+"name": &"up",
+"speed": 5.0
+}, {
+"frames": [{
+"duration": 1.0,
+"texture": ExtResource("3_2hs0m")
+}, {
+"duration": 1.0,
+"texture": ExtResource("4_1jxqw")
+}],
+"loop": true,
+"name": &"walk",
+"speed": 5.0
+}]
+
+[sub_resource type="CapsuleShape2D" id="CapsuleShape2D_b26j0"]
+radius = 47.0
+height = 110.0
+
+[node name="Player" type="Area2D"]
+script = ExtResource("1_sweqy")
+
+[node name="ParticleBurst" type="GPUParticles2D" parent="."]
+emitting = false
+amount = 100
+texture = ExtResource("8_dw050")
+lifetime = 3.0
+interp_to_end = 0.166
+one_shot = true
+preprocess = 0.21
+speed_scale = 1.69
+explosiveness = 0.18
+randomness = 0.2
+collision_base_size = 0.0
+process_material = SubResource("ParticleProcessMaterial_b26j0")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(0.2, 0.2)
+sprite_frames = SubResource("SpriteFrames_dw050")
+animation = &"fly"
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="."]
+texture_filter = 1
+position = Vector2(-6, 3)
+scale = Vector2(0.4, 0.4)
+shape = SubResource("CapsuleShape2D_b26j0")
+
+[connection signal="body_entered" from="." to="." method="_on_body_entered"]
+[connection signal="hit" from="." to="." method="_on_hit"]
