@@ -7,11 +7,12 @@ var screen_size # Size of game window
 
 # New variables for the ship to use for rotational and speed. Speed can now be independently adjusted.
 var facing_degrees = 0
-var ship_speed = 0.8
 
 # Deceleration & Velocity Changes
 var velocity = Vector2.ZERO
-var deceleration = 0.1
+var ship_speed = 1
+
+var deceleration = 0.05
 
 var on_screen
 
@@ -25,6 +26,9 @@ func _ready(): # Used when the player enters the scene tree.
 func _process(delta): # Runs the whole time.
 		
 	if on_screen:
+		
+		$ParticleThrust.emitting = false
+		
 		# Left and Right now rotate the ship instead of making it go up and down.
 		if Input.is_action_pressed("move_right"):
 			facing_degrees += 5
@@ -36,16 +40,15 @@ func _process(delta): # Runs the whole time.
 				facing_degrees = 360
 		# Fly ship forward or reverse it (though realistically, you're not able to reverse a ship in such manners)
 		if Input.is_action_pressed("move_up"):
-			velocity.x += cos(facing_degrees * PI / 180) * ship_speed
-			velocity.y += sin(facing_degrees * PI / 180) * ship_speed
-		if Input.is_action_pressed("move_down"):
-			velocity.x -= cos(facing_degrees * PI / 180) * ship_speed
-			velocity.y -= sin(facing_degrees * PI / 180) * ship_speed
-		
-		if (abs(velocity.x) + abs(velocity.y)) / 2 > 0.1:
+			velocity.x = cos(facing_degrees * PI / 180) * ship_speed 
+			velocity.y = sin(facing_degrees * PI / 180) * ship_speed
 			$ParticleThrust.emitting = true
-		else:
-			$ParticleThrust.emitting = false
+		if Input.is_action_pressed("move_down"):
+			velocity.x = cos(facing_degrees * PI / 180) * ship_speed 
+			velocity.y = sin(facing_degrees * PI / 180) * ship_speed 
+			
+		# print (velocity)
+			
 		
 		$ParticleThrust.rotation = ((facing_degrees + 180) * PI / 180)
 			
@@ -57,15 +60,36 @@ func _process(delta): # Runs the whole time.
 	$AnimatedSprite2D.rotation = (facing_degrees * PI / 180)
 		
 	# Update code to only use fly animation, when ship is in motion.
-	if velocity.length() > 0: # Moving @ (1,1) = SQRT(2) is faster than simply moving cardinal. Normalizing prevents that.
-		velocity = velocity.normalized() * speed
+	if ((abs(velocity.x) + abs(velocity.y)) / 2 > 0.1): # Moving @ (1,1) = SQRT(2) is faster than simply moving cardinal. Normalizing prevents that.
 		# Play sprite if moving. Else don't.
 		$AnimatedSprite2D.play()
 		$AnimatedSprite2D.animation = "fly"
 	else:
 		$AnimatedSprite2D.stop()
+	
+	#
+	if (abs(velocity.x) > 0):
+		if (velocity.x > 0):
+			velocity.x -= deceleration * abs(cos(facing_degrees * PI / 180))
+		else:
+			velocity.x += deceleration * abs(cos(facing_degrees * PI / 180))
+			
+		if (abs(velocity.x) < deceleration):
+			velocity.x = 0
+			
+	if (abs(velocity.y) > 0):
+		if (velocity.y > 0):
+			velocity.y -= deceleration * abs(sin(facing_degrees * PI / 180)) 
+		else:
+			velocity.y += deceleration * abs(sin(facing_degrees * PI / 180))
+			
+		if (abs(velocity.y) < deceleration):
+			velocity.y = 0
+	
+	print(velocity)
 		
-	position += velocity * delta # Modify character position based on the velocity, by the system FPS.
+	position.x += velocity.x * delta * speed # Modify character position based on the velocity, by the system FPS.
+	position.y += velocity.y * delta * speed
 	position = position.clamp(Vector2.ZERO, screen_size) # Clamp prevents the character from leaving the screen.
 	
 	# Choosing animation files to play based on direction of sprite - OLD CODE, NOT USED ANYMORE.
@@ -97,6 +121,9 @@ func start(pos):
 	facing_degrees = 270
 	show()
 	on_screen = true
+	
+	velocity = Vector2.ZERO
+	
 	$ParticleBurst.emitting = false
 	
 	$ParticleThrust.emitting = false
