@@ -9,6 +9,10 @@ var screen_size # Size of game window
 var facing_degrees = 0
 var ship_speed = 0.8
 
+# Deceleration & Velocity Changes
+var velocity = Vector2.ZERO
+var deceleration = 0.1
+
 var on_screen
 
 func _ready(): # Used when the player enters the scene tree.
@@ -19,17 +23,6 @@ func _ready(): # Used when the player enters the scene tree.
 	on_screen = false
 	
 func _process(delta): # Runs the whole time.
-	var velocity = Vector2.ZERO # Defines player's movement vector, add and subtract to modify the velocity based on player movement direction.
-	
-	# OLD TUTORIAL CODE. NOT USED.
-	#if Input.is_action_pressed("move_right"):
-		#velocity.x += 1
-	#if Input.is_action_pressed("move_left"):
-		#velocity.x -= 1
-	#if Input.is_action_pressed("move_down"):
-		#velocity.y += 1
-	#if Input.is_action_pressed("move_up"):
-		#velocity.y -= 1
 		
 	if on_screen:
 		# Left and Right now rotate the ship instead of making it go up and down.
@@ -48,6 +41,13 @@ func _process(delta): # Runs the whole time.
 		if Input.is_action_pressed("move_down"):
 			velocity.x -= cos(facing_degrees * PI / 180) * ship_speed
 			velocity.y -= sin(facing_degrees * PI / 180) * ship_speed
+		
+		if (abs(velocity.x) + abs(velocity.y)) / 2 > 0.1:
+			$ParticleThrust.emitting = true
+		else:
+			$ParticleThrust.emitting = false
+		
+		$ParticleThrust.rotation = ((facing_degrees + 180) * PI / 180)
 			
 		if Input.is_action_just_pressed("nuke"):
 			nuke.emit()
@@ -98,4 +98,8 @@ func start(pos):
 	show()
 	on_screen = true
 	$ParticleBurst.emitting = false
+	
+	$ParticleThrust.emitting = false
+	$ParticleThrust.restart()
+	
 	$CollisionShape2D.disabled = false
