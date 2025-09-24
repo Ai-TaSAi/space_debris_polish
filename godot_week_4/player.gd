@@ -44,8 +44,8 @@ func _process(delta): # Runs the whole time.
 			velocity.y = sin(facing_degrees * PI / 180) * ship_speed
 			$ParticleThrust.emitting = true
 		if Input.is_action_pressed("move_down"):
-			velocity.x = cos(facing_degrees * PI / 180) * ship_speed 
-			velocity.y = sin(facing_degrees * PI / 180) * ship_speed 
+			velocity.x = -cos(facing_degrees * PI / 180) * ship_speed 
+			velocity.y = -sin(facing_degrees * PI / 180) * ship_speed 
 			
 		# print (velocity)
 			
