@@ -14,8 +14,12 @@ func _on_visible_on_screen_notifier_2d_screen_exited():
 	
 
 func kill_self ():
+	$PointLight2D.show()
 	$AnimatedSprite2D.play("explode")
+	$DeathExplode.restart()
 	$CollisionShape2D.disabled = true
-	await $AnimatedSprite2D.animation_finished
+	await $DeathExplode.finished
+	
+	$PointLight2D.hide()
 	print("Killed Self")
 	queue_free()

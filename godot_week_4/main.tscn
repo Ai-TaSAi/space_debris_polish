@@ -34,8 +34,6 @@ offset_right = 40.0
 offset_bottom = 40.0
 texture = ExtResource("3_7mycd")
 
-[node name="Player" parent="." instance=ExtResource("2_h2yge")]
-
 [node name="MobTimer" type="Timer" parent="."]
 wait_time = 0.3
 
@@ -56,6 +54,12 @@ curve = SubResource("Curve2D_1bvp3")
 [node name="MobSpawnLocation" type="PathFollow2D" parent="MobPath"]
 position = Vector2(-1, -1)
 rotation = 0.000937498
+
+[node name="DirectionalLight2D" type="DirectionalLight2D" parent="."]
+energy = 0.8
+blend_mode = 1
+
+[node name="Player" parent="." instance=ExtResource("2_h2yge")]
 
 [node name="HUD" parent="." instance=ExtResource("4_1bvp3")]
 
@@ -81,11 +85,11 @@ volume_db = 9.805
 [node name="UpdateSound" type="AudioStreamPlayer2D" parent="."]
 stream = ExtResource("10_4c57u")
 
-[connection signal="hit" from="Player" to="." method="game_over"]
-[connection signal="hit" from="Player" to="." method="_on_player_hit"]
-[connection signal="nuke" from="Player" to="." method="_on_player_nuke"]
 [connection signal="timeout" from="MobTimer" to="." method="_on_mob_timer_timeout"]
 [connection signal="timeout" from="ScoreTimer" to="." method="_on_score_timer_timeout"]
 [connection signal="timeout" from="StartTimer" to="." method="_on_start_timer_timeout"]
+[connection signal="hit" from="Player" to="." method="game_over"]
+[connection signal="hit" from="Player" to="." method="_on_player_hit"]
+[connection signal="nuke" from="Player" to="." method="_on_player_nuke"]
 [connection signal="start_game" from="HUD" to="." method="new_game"]
 [connection signal="timeout" from="FilterTimer" to="." method="_on_filter_timer_timeout"]

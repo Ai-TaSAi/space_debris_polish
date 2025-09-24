@@ -102,18 +102,42 @@ func _process(delta): # Runs the whole time.
 		#$AnimatedSprite2D.flip_v = velocity.y > 0
 
 func _on_body_entered(body: Node2D) -> void:
-	hide() # Player disappears after being hit.
+	$CollisionShape2D.disabled = true
+	$DeathExplode.emitting = true
+	$ParticleThrust.emitting = false
+	$DeathExplode.restart()
+	$AnimatedSprite2D.hide()
+	
 	on_screen = false
+	
 	hit.emit()
+	
+	await ($DeathExplode.finished)
+	
+	hide() # Player disappears after being hit.
+	
 	# Must be deferred as we can't change physics properties on a physics callback. Makes it so that object collision disappears once it's safe to do so.
 	$CollisionShape2D.set_deferred("disabled", true)
 	
 func _on_failure() -> void:
-	hide()
+	$CollisionShape2D.disabled = true
+	$DeathExplode.emitting = true
+	$ParticleThrust.emitting = false
+	$DeathExplode.restart()
+	$AnimatedSprite2D.hide()
+	
 	on_screen = false
+	
 	hit.emit()
+	
+	await ($DeathExplode.finished)
+	
+	hide()
+	
 	# Must be deferred as we can't change physics properties on a physics callback. Makes it so that object collision disappears once it's safe to do so.
 	$CollisionShape2D.set_deferred("disabled", true)
+	
+	
 
 # Function resets the player when starting a new game.
 func start(pos):
@@ -130,3 +154,5 @@ func start(pos):
 	$ParticleThrust.restart()
 	
 	$CollisionShape2D.disabled = false
+	
+	$AnimatedSprite2D.show()

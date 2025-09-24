@@ -1,4 +1,4 @@
-[gd_scene load_steps=17 format=3 uid="uid://jdnrqh3qdvd8"]
+[gd_scene load_steps=23 format=3 uid="uid://jdnrqh3qdvd8"]
 
 [ext_resource type="Texture2D" uid="uid://cmr8bcq86xkkb" path="res://playerGrey_up1.png" id="1_hqtel"]
 [ext_resource type="Script" uid="uid://dp8uw72h3o0vi" path="res://player.gd" id="1_sweqy"]
@@ -9,17 +9,35 @@
 [ext_resource type="Texture2D" uid="uid://cwbcqqt5h5aq3" path="res://playerGrey_walk2.png" id="4_1jxqw"]
 [ext_resource type="Texture2D" uid="uid://dn0oc15y8ov0i" path="res://art/Blast.png" id="8_dw050"]
 
+[sub_resource type="Gradient" id="Gradient_b26j0"]
+offsets = PackedFloat32Array(0.81592, 1)
+colors = PackedColorArray(1, 1, 1, 1, 1, 1, 1, 0)
+
+[sub_resource type="GradientTexture1D" id="GradientTexture1D_dw050"]
+gradient = SubResource("Gradient_b26j0")
+
 [sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_b26j0"]
 particle_flag_disable_z = true
 direction = Vector3(1, 1, 0)
 spread = 180.0
-initial_velocity_min = 147.71
-initial_velocity_max = 675.8
+initial_velocity_min = 61.52
+initial_velocity_max = 264.86
 angular_velocity_min = -63.8
 angular_velocity_max = 63.6
 gravity = Vector3(0, 0, 0)
 scale_min = 0.2
 scale_max = 0.4
+color_ramp = SubResource("GradientTexture1D_dw050")
+
+[sub_resource type="Gradient" id="Gradient_nvl01"]
+offsets = PackedFloat32Array(0, 0.511211, 1)
+colors = PackedColorArray(0.414063, 0.0700887, 0.0345052, 1, 1, 0.513021, 0.0833333, 1, 0.239216, 0.0745098, 0.0352941, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_ivps1"]
+gradient = SubResource("Gradient_nvl01")
+fill = 1
+fill_from = Vector2(0.504274, 0.507123)
+fill_to = Vector2(0.814815, 0.173789)
 
 [sub_resource type="Gradient" id="Gradient_dw050"]
 offsets = PackedFloat32Array(0.364723, 0.535127, 0.693573)
@@ -86,8 +104,18 @@ animations = [{
 }]
 
 [sub_resource type="CapsuleShape2D" id="CapsuleShape2D_b26j0"]
-radius = 47.0
-height = 110.0
+radius = 35.0
+height = 70.0
+
+[sub_resource type="Gradient" id="Gradient_ivps1"]
+offsets = PackedFloat32Array(0, 0.686099, 1)
+colors = PackedColorArray(1, 1, 1, 1, 0.919271, 0.919271, 0.919271, 1, 0, 0, 0, 1)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_urp6f"]
+gradient = SubResource("Gradient_ivps1")
+fill = 1
+fill_from = Vector2(0.495726, 0.501424)
+fill_to = Vector2(0.843305, 0.877493)
 
 [node name="Player" type="Area2D"]
 script = ExtResource("1_sweqy")
@@ -106,6 +134,18 @@ randomness = 0.2
 collision_base_size = 0.0
 process_material = SubResource("ParticleProcessMaterial_b26j0")
 
+[node name="DeathExplode" type="GPUParticles2D" parent="."]
+emitting = false
+amount = 300
+texture = SubResource("GradientTexture2D_ivps1")
+interp_to_end = 0.166
+one_shot = true
+preprocess = 0.21
+explosiveness = 0.18
+randomness = 0.2
+collision_base_size = 0.0
+process_material = SubResource("ParticleProcessMaterial_b26j0")
+
 [node name="ParticleThrust" type="GPUParticles2D" parent="."]
 amount = 50
 texture = SubResource("GradientTexture2D_b26j0")
@@ -118,9 +158,12 @@ animation = &"fly"
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="."]
 texture_filter = 1
-position = Vector2(-6, 3)
 scale = Vector2(0.4, 0.4)
 shape = SubResource("CapsuleShape2D_b26j0")
+
+[node name="PointLight2D" type="PointLight2D" parent="."]
+scale = Vector2(6.96875, 6.96875)
+texture = SubResource("GradientTexture2D_urp6f")
 
 [connection signal="body_entered" from="." to="." method="_on_body_entered"]
 [connection signal="hit" from="." to="." method="_on_hit"]
